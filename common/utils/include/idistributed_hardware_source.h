@@ -40,6 +40,12 @@ struct EnableParam {
     std::string sinkVersion;
     std::string sinkAttrs;
     std::string subtype;
+    /**
+     * @brief 业务自定义参数 (Base64 编码的 TLV 格式)
+     * 框架层透传此参数，不解析
+     * 硬件层负责解码并使用自定义参数
+     */
+    std::string customTLVParams;
 };
 
 enum class BusinessState : uint32_t {

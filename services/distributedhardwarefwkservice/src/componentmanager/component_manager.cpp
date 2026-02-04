@@ -252,7 +252,7 @@ bool ComponentManager::WaitForResult(const Action &action, ActionResult actionsR
 }
 
 int32_t ComponentManager::Enable(const std::string &networkId, const std::string &uuid, const std::string &dhId,
-    const DHType dhType, bool isActive)
+    const DHType dhType, bool isActive, const DHDescriptor *dhDescriptor)
 {
     DHLOGI("start.");
     if (!IsIdLengthValid(networkId) || !IsIdLengthValid(uuid) || !IsIdLengthValid(dhId)) {
@@ -271,6 +271,10 @@ int32_t ComponentManager::Enable(const std::string &networkId, const std::string
         if (RetryGetEnableParam(networkId, uuid, dhId, dhType, param) != DH_FWK_SUCCESS) {
             return ret;
         }
+    }
+    // 如果提供了 DHDescriptor，透传自定义 TLV 参数
+    if (dhDescriptor != nullptr && !dhDescriptor->customTLVParams.empty()) {
+        param.customTLVParams = dhDescriptor->customTLVParams;
     }
     if (!isActive) {
         ret = CheckSubtypeResource(param.subtype, networkId);
@@ -1774,7 +1778,7 @@ int32_t ComponentManager::RealEnableSource(const std::string &networkId, const s
         UninitCompSource(dhDescriptor.dhType);
         return ERR_DH_FWK_COMPONENT_ENABLE_TIMEOUT;
     }
-    ret = Enable(networkId, uuid, dhDescriptor.id, dhDescriptor.dhType, isActive);
+    ret = Enable(networkId, uuid, dhDescriptor.id, dhDescriptor.dhType, isActive, &dhDescriptor);
     if (ret != DH_FWK_SUCCESS) {
         DHLOGE("Enable failed, ret = %{public}d.", ret);
         std::unordered_map<DHType, std::shared_future<int32_t>> futureResult;
