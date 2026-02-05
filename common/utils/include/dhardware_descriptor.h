@@ -27,6 +27,15 @@ namespace DistributedHardware {
 struct DHDescriptor {
     std::string id;
     DHType dhType;
+    /**
+     * @brief 自定义初始化参数（JSON 格式字符串）
+     *
+     * 用于 EnableSource 接口，框架层会通过 ConfigDistributedHardware
+     * 透传给硬件层，key 为 "enable_init_params"
+     *
+     * 示例：{"camera_resolution":"1920x1080","fps":30}
+     */
+    std::string customParams;
 };
 
 enum class EnableStep : uint32_t {
